@@ -23,7 +23,7 @@ module Spree
           params[:q] ||= {}
           params[:q][:sort] ||= "name.asc"
           @search = super.search(params[:q])
-          @collection = @search.result(:distinct => true).page(params[:page]).per(Spree::Config[:admin_pgroup_per_page])
+          @collection = @search.result(:distinct => true).page(params[:page]).per(Spree::ProductGroup::Config[:admin_pgroup_per_page])
         end
     
       private
