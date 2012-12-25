@@ -2,7 +2,8 @@ module Spree
   module Admin
     class ProductGroupsController < ResourceController
       before_filter :patch_params, :only => [:update]
-  
+      before_filter :get_config      
+
       def preview
         @product_group = ProductGroup.new(params[:product_group])
         @product_group.name = "for_preview"
@@ -23,10 +24,14 @@ module Spree
           params[:q] ||= {}
           params[:q][:sort] ||= "name.asc"
           @search = super.search(params[:q])
-          @collection = @search.result(:distinct => true).page(params[:page]).per(Spree::ProductGroup::Config[:admin_pgroup_per_page])
+          @collection = @search.result(:distinct => true).page(params[:page]).per(get_config.admin_pgroup_per_page)
         end
     
       private
+        
+        def get_config
+          @config = Spree::ProductGroupConfiguration.new
+        end
 
         # Consolidate argument arrays for nested product_scope attributes
         # Necessary for product scopes with multiple arguments
