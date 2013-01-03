@@ -5,7 +5,7 @@ module Spree
       before_filter :get_config      
 
       def preview
-        @product_group = ProductGroup.new(params[:product_group])
+        @product_group = Spree::ProductGroup.new(params[:product_group])
         @product_group.name = "for_preview"
         respond_with(@product_group) { |format| format.html { render :partial => 'preview', :layout => false } }
       end
@@ -13,7 +13,7 @@ module Spree
       protected
 
         def find_resource
-          ProductGroup.find_by_permalink!(params[:id])
+          Spree::ProductGroup.find_by_permalink!(params[:id])
         end
      
         def location_after_save

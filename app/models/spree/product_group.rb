@@ -56,7 +56,7 @@ module Spree
       else                        return(nil)
       end
 
-      if pg_name && opg = ProductGroup.find_by_permalink(pg_name)
+      if pg_name && opg = Spree::ProductGroup.find_by_permalink(pg_name)
         pg = new.from_product_group(opg)
       elsif attrs
         attrs = url.split('/')
@@ -81,7 +81,7 @@ module Spree
     def from_route(attrs)
       self.order_scope = attrs.pop if attrs.length % 2 == 1
       attrs.each_slice(2) do |scope|
-        next unless Product.respond_to?(scope.first)
+        next unless Spree::Product.respond_to?(scope.first)
         add_scope(scope.first, scope.last.split(','))
       end
       self
@@ -112,7 +112,7 @@ module Spree
       # from first nested_scope so we have to apply ordering FIRST.
       # see #2253 on rails LH
       base_product_scope = scopish
-      if use_order && !self.order_scope.blank? && Product.respond_to?(self.order_scope.intern)
+      if use_order && !self.order_scope.blank? && Spree::Product.respond_to?(self.order_scope.intern)
         base_product_scope = base_product_scope.send(self.order_scope)
       end
 
@@ -124,13 +124,13 @@ module Spree
 
     # returns chain of named scopes generated from order scope and product scopes.
     def dynamic_products(use_order = true)
-      apply_on(Product.group_by_products_id, use_order)
+      apply_on(Spree::Product.group_by_products_id, use_order)
     end
 
     # Does the final ordering if requested
     # TODO: move the order stuff out of the above - is superfluous now
     def products(use_order = true)
-      cached_group = Product.in_cached_group(self)
+      cached_group = Spree::Product.in_cached_group(self)
       if cached_group.limit(1).blank?
         dynamic_products(use_order)
       elsif !use_order
@@ -145,8 +145,8 @@ module Spree
     end
 
     def include?(product)
-      res = apply_on(Product.where(:id => product.id), false)
-      res.count > 0
+      res = apply_on(Spree::Product.where(:id => product.id), false)
+      res.count.any?
     end
 
     def scopes_to_hash
